@@ -1,0 +1,4 @@
+name = "julia_argparse_template"
+uuid = "38b065e6-0dd0-416d-b23f-8bce48fc661d"
+authors = ["Steve Leak <sleak@lbl.gov>"]
+version = "0.1.0"
