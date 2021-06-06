@@ -1,0 +1,12 @@
+[logging]
+verbosity = "warn"
+overwrite = false
+
+[query]
+exact = false
+or = false
+
+[update]
+all = false
+replace = false
+
