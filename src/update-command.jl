@@ -1,8 +1,6 @@
 " config relevant to applying updates to the list "
 module UpdateCommand
 using ArgParse
-#function prepare_argparsing!(args::ArgParseSettings, 
-#                             args_to_import::ArgParseSettings...)
 function prepare_argparsing()::ArgParseSettings
     update_args = ArgParseSettings()
 #    @add_arg_table args["update"] begin
@@ -33,10 +31,17 @@ function prepare_argparsing()::ArgParseSettings
 end
 
 using Configurations
-using ..CompleteConfig
+using ..Config
 using ..Queries
 using ..UpdatesSetup
-function run_command(config::Config, command_args::Dict{String,T}) where T
+
+function update_config!(config::CompleteConfig, command_args::Dict{String,T}, 
+                        common_args::Dict{String,T}) where T
+    config.all |= get(command_args, "all", false) || get(common_args,"all", false)
+    config.replace |= get(command_args, "replace", false) || get(common_args,"replace", false)
+end
+
+function run_command(config::CompleteConfig, command_args::Dict{String,T}) where T
     println("called update with $command_args")
     target = Queries.query_result(config.query, command_args)
     # now apply the update to each thing in the target

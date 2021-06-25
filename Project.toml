@@ -1,4 +1,8 @@
-name = "julia_cli_app_template"
+name = "julia-cli-app-template"
 uuid = "38b065e6-0dd0-416d-b23f-8bce48fc661d"
 authors = ["Steve Leak <sleak@lbl.gov>"]
 version = "0.1.0"
+
+[deps]
+Configurations = "5218b696-f38b-4ac9-8b61-a12ec717816d"
+LoggingExtras = "e6f89c97-d47a-5376-807f-9c37f3926c36"

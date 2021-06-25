@@ -1,16 +1,16 @@
-module CompleteConfig
-export Config, apply_config
+module Config
+export CompleteConfig, apply_config
 using ..LoggingSetup
 using ..Queries
 using ..UpdatesSetup
 
 using Configurations
-@option mutable struct Config
+@option mutable struct CompleteConfig
     logging::LoggingConfig
     query::QueryConfig
     update::UpdateConfig
 end
-Config() = Config(LoggingConfig(),QueryConfig(),UpdateConfig())
+CompleteConfig() = CompleteConfig(LoggingConfig(),QueryConfig(),UpdateConfig())
 
 "merge nested json-like dicts, appending rather than replacing collections"
 function deep_merge(d1::AbstractDict, d2::AbstractDict)::Dict
@@ -24,10 +24,10 @@ function deep_merge(d1::AbstractDict, d2::AbstractDict)::Dict
     d
 end
 
-function apply_config(settings::Config, d::AbstractDict)::Config
-    deep_merge(to_dict(settings), d) |> x -> from_dict(Config,x)
+function apply_config(settings::CompleteConfig, d::AbstractDict)::CompleteConfig
+    deep_merge(to_dict(settings), d) |> x -> from_dict(CompleteConfig,x)
 end
-apply_config(d::AbstractDict) = apply_config(Config(),d)
+apply_config(d::AbstractDict) = apply_config(CompleteConfig(),d)
 
 end 
 

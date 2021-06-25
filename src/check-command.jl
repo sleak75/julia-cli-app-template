@@ -18,13 +18,14 @@ function prepare_argparsing()::ArgParseSettings
 #    end
 end
 
-using ..CompleteConfig
-function update_config!(config::Config, command_args::Dict{String,T}, 
+using ..Config
+function update_config!(config::CompleteConfig, command_args::Dict{String,T}, 
                         common_args::Dict{String,T}) where T
     # no extra config needed for check
+    @debug "updating config for CheckCommand (no-op)"
 end
 
-function run_command(config::Config, command_args::Dict{String,T}) where T
-    println("called check with $command_args")
+function run_command(config::CompleteConfig, command_args::Dict{String,T}) where T
+    @info "called check with $command_args"
 end
 end

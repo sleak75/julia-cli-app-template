@@ -12,9 +12,9 @@ function prepare_argparsing()::ArgParseSettings
 end
 
 using ..Queries
-using ..CompleteConfig
+using ..Config
 
-function update_config!(config::Config, command_args::Dict{String,T}, 
+function update_config!(config::CompleteConfig, command_args::Dict{String,T}, 
                         common_args::Dict{String,T}) where T
     @info config
     @info command_args
@@ -22,7 +22,7 @@ function update_config!(config::Config, command_args::Dict{String,T},
     Queries.update_config!(config.query, command_args, common_args)
 end
 
-function run_command(config::Config, command_args::Dict{String,T}) where T
+function run_command(config::CompleteConfig, command_args::Dict{String,T}) where T
     # next run the command
     println("called find with $command_args")
     result = Queries.query_result(config.query, command_args)

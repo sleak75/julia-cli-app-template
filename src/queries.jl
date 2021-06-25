@@ -2,6 +2,7 @@
 module Queries
 export QueryConfig
 using Configurations
+
 @option mutable struct QueryConfig
     exact::Bool
     or::Bool
@@ -29,14 +30,13 @@ end
 
 function update_config!(config::QueryConfig, command_args::Dict{String,T}, 
                         common_args::Dict{String,T}) where T
-    get_if(d,k) = get(d,k,false)
-    config.exact |= get_if(command_args, "exact") || get_if(common_args,"exact")
-    config.or |= get_if(command_args, "or") || get_if(common_args,"or")
+    config.exact |= get(command_args, "exact", false) || get(common_args,"exact", false)
+    config.or |= get(command_args, "or", false) || get(common_args,"or", false)
 end
 
 function query_result(config::QueryConfig, command_args::Dict{String,T})::Integer where T 
-    # FIXME needs to return something smarter
-    println("querying ..")
+    # FIXME change return type of this function and implement functionality here
+    @info "querying .."
     1 # placeholder
 end
 
