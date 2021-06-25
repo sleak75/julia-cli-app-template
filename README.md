@@ -1,4 +1,4 @@
-# Julia ArgParse Template
+# Julia CLI App Template
 
 A pattern I often want to use is is a command-line app whose functionality
 is provided by subcommands, that can gather config by reading, in order:

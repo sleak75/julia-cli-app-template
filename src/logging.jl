@@ -2,22 +2,23 @@ module LoggingSetup
 export LoggingConfig
 
 # -------------------------------------------------------------------
-# define own enum for log levels, to add "silent" (disable-logging) level
+" define own enum for log levels, to add 'silent' (disable-logging) level"
 @enum ValidLogLevel silent error warn info debug
-function Base.convert(::Type{ValidLogLevel},s::String)
-    map = Dict("silent"=>silent, "error"=>error, "warn"=>warn, 
-               "info"=>info, "debug"=>debug)
-    map[s]
-end
-#using Logging
-import Logging
 
+import Logging # import because we'll define a new LogLevel constructor
 function Base.convert(::Type{Logging.LogLevel},level::ValidLogLevel)
     map = Dict(error=>Logging.Error, warn=>Logging.Warn, 
                info=>Logging.Info, debug=>Logging.Debug)
     map[level]
 end
 Logging.LogLevel(level::ValidLogLevel) = convert(Logging.LogLevel, level)
+
+function Base.convert(::Type{ValidLogLevel},s::String)
+    map = Dict("silent"=>silent, "error"=>error, "warn"=>warn, 
+               "info"=>info, "debug"=>debug)
+    map[s]
+end
+
 function Base.:+(a::ValidLogLevel,b::Integer)::ValidLogLevel
     ValidLogLevel(min(Integer(a)+b,Integer(debug)))
 end
@@ -27,7 +28,8 @@ end
 
 # -------------------------------------------------------------------
 using Configurations
-"holds the logging-related configuration the app will use"
+
+"LoggingConfig holds the logging-related configuration the app will use"
 @option mutable struct LoggingConfig
     verbosity::ValidLogLevel
     log_level::Union{ValidLogLevel, Nothing}
@@ -38,6 +40,7 @@ LoggingConfig() = LoggingConfig(warn, nothing, nothing, false)
 
 # -------------------------------------------------------------------
 using ArgParse
+
 function prepare_argparsing()::ArgParseSettings
     logging_args = ArgParseSettings()
     @add_arg_table logging_args begin
@@ -67,6 +70,9 @@ function prepare_argparsing()::ArgParseSettings
 end
 
 # -------------------------------------------------------------------
+""" maybe() is like something(), but returns nothing in the event
+    that all arguments are nothing (instead of raising Error)
+"""
 function maybe(v::Vector)
     things = filter(x->x!==nothing, v)
     size(things)[1]==0 ? nothing : first(something(things))
@@ -95,7 +101,6 @@ end
 
 using Logging
 using LoggingExtras
-#function setup_logging(config::LoggingConfig, command_args::Dict{String,T}) where T 
 function setup_logging(config::LoggingConfig)  
     loggers = Vector()
     MaybeLogger(x,lvl) = lvl == silent ? NullLogger() : MinLevelLogger(x,Logging.LogLevel(lvl))
