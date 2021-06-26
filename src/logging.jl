@@ -79,12 +79,8 @@ function maybe(v::Vector)
 end    
 maybe(v...) = maybe([v...])
 
-# FIXME for almost everything else, update_config! takes a CompleteConfig, 
-# but logging and queries take their specific config .. this is too confusing
-# and error prone, need to think about how to treat command settings vs 
-# functionality settings
-function update_config!(config::LoggingConfig, command_args::Dict{String,T}, 
-                        common_args::Dict{String,T}) where T
+function apply_cmdline_args!(config::LoggingConfig, command_args::Dict{String,T}, 
+                             common_args::Dict{String,T}) where T
     config.verbosity += command_args["verbose"] + common_args["verbose"] -
                         command_args["quiet"] - common_args["quiet"]
     config.log_level = maybe(command_args["log-level"],

@@ -1,4 +1,4 @@
-" config relevant to querying the list "
+" config and functionality relevant to querying the list "
 module Queries
 export QueryConfig
 using Configurations
@@ -28,8 +28,8 @@ function prepare_argparsing()::ArgParseSettings
     query_args
 end 
 
-function update_config!(config::QueryConfig, command_args::Dict{String,T}, 
-                        common_args::Dict{String,T}) where T
+function apply_cmdline_args!(config::QueryConfig, command_args::Dict{String,T}, 
+                                common_args::Dict{String,T}) where T
     config.exact |= get(command_args, "exact", false) || get(common_args,"exact", false)
     config.or |= get(command_args, "or", false) || get(common_args,"or", false)
 end

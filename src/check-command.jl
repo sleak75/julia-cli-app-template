@@ -2,7 +2,6 @@ module CheckCommand
 
 # -------------------------------------------------------------------
 using ArgParse
-#function prepare_argparsing!(args::ArgParseSettings, args_to_import::ArgParseSettings...)
 function prepare_argparsing()::ArgParseSettings
     check_args = ArgParseSettings()
     @add_arg_table check_args begin
@@ -13,18 +12,20 @@ function prepare_argparsing()::ArgParseSettings
             # if there are none it should read from stdin
     end
     check_args
-#    for a in args_to_import
-#        import_settings(args["check"], a)
-#    end
 end
 
 using ..Config
-function update_config!(config::CompleteConfig, command_args::Dict{String,T}, 
-                        common_args::Dict{String,T}) where T
-    # no extra config needed for check
+function apply_cmdline_args!(config::CompleteConfig, command_args::Dict{String,T}, 
+                             common_args::Dict{String,T}) where T
+    # no extra config needed for this command
     @debug "updating config for CheckCommand (no-op)"
 end
 
+""" 
+Run this command. config holds the behavior settings accumulated from the command
+line, any config files and any environment variables; and command_args holds the 
+command line in dict form (including, most importantly, the positional args)
+"""
 function run_command(config::CompleteConfig, command_args::Dict{String,T}) where T
     @info "called check with $command_args"
 end

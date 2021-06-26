@@ -3,11 +3,29 @@
 # The template uses a Blackboard architecture for the app configuration: a
 # CompleteConfig struct 
 
-# first gather functionality that is used by multiple commands:
+# first gather functionality that is used by multiple commands.
+# Each of these modules should define a Configurations @option struct to hold
+# the settings relevant to this functionality; a function:
+#   function prepare_argparsing()::ArgParseSettings
+# which defines an ArgParse @add_arg_table corresponding to the @option struct,
+# and a function:
+#   function apply_cmdline_args!(config::QueryConfig, command_args::Dict{String,T}, 
+#                                common_args::Dict{String,T}) where T
+# which gathers options passed before and after the command (on the cmdline)
+# that are relevant to this functionality, and updates the @option struct accordingly
+# (the module might also provide other functions specific to providing this functionality)
 include("logging.jl")
 include("queries.jl")
 include("updates.jl")
+# next define the CompleteConfig struct:
 include("config.jl")
+# finally define the commands. Each command module should define prepare_argparsing
+# as per the settings modules, a function:  
+#   function apply_cmdline_args!(config::CompleteConfig, command_args::Dict{String,T},
+#                                common_args::Dict{String,T}) where T
+# that updates the CompleteConfig, and a function:
+#   function run_command(config::CompleteConfig, command_args::Dict{String,T}) where T
+# that provides the functionality for this command.
 include("check-command.jl")
 include("find-command.jl")
 include("update-command.jl")
@@ -26,7 +44,7 @@ using .Config: CompleteConfig, apply_config
 # read commandline first, in case options there set places to read configs
 logging_args = LoggingSetup.prepare_argparsing()
 query_args = Queries.prepare_argparsing()
-#update_args = UpdateCommand.prepare_argparsing()
+update_args = UpdatesSetup.prepare_argparsing()
 commands = ArgParseSettings()
 @add_arg_table commands begin
     "check"
@@ -52,6 +70,7 @@ import_settings(args["find"], query_args)
 args["update"] = UpdateCommand.prepare_argparsing()
 import_settings(args["update"], logging_args)
 import_settings(args["update"], query_args)
+import_settings(args["update"], update_args)
 
 command_module = Dict(
     "check" => CheckCommand,
@@ -76,12 +95,11 @@ config = apply_config(config, TOML.parsefile(path))
 #config = apply_config(config, TOML.parsefile(another_path)) 
 
 # setup cross-cutting stuff like logging, paths:
-LoggingSetup.update_config!(config.logging, parsed_cmdline[cmd], parsed_cmdline)
+LoggingSetup.apply_cmdline_args!(config.logging, parsed_cmdline[cmd], parsed_cmdline)
 LoggingSetup.setup_logging(config.logging)
 # setup_paths!(config.paths, parsed_command_args, parsed_common_args)
 
-
-command_module[cmd].update_config!(config, parsed_cmdline[cmd], parsed_cmdline)
+command_module[cmd].apply_cmdline_args!(config, parsed_cmdline[cmd], parsed_cmdline)
 command_module[cmd].run_command(config, parsed_cmdline[cmd])
 
 
